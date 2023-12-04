@@ -28,13 +28,16 @@ async function run() {
   try {
     const userCollection = client.db('nodeMongoCrud').collection('users');
 
+    //read 
     app.get('/users', async(req, res)=>{
       const query = {};
       const cursor = userCollection.find(query);
       const users = await cursor.toArray();
       res.send(users);
 
-    })
+    });
+
+    //create or insert
 
     app.post('/users', async (req, res) => {
       const user = req.body;
@@ -43,17 +46,22 @@ async function run() {
       res.send(result);
     });
 
+
+// delete 
     app.delete('/users/:id', async (req, res) => {
       const id = req.params.id;
-      const query = { _id: ObjectId(id) };
-
-      console.log('Trying to delete', id);
-
+      const query = { _id:new ObjectId(id) };
       const result = await userCollection.deleteOne(query);
-      console.log(result);
-
       res.send(result);
     });
+
+    // update
+    app.get('/users/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const user = await userCollection.findOne(query);
+      res.send(user);
+    })
 
   } finally {
 
